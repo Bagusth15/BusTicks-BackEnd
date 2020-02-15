@@ -7,6 +7,7 @@ const {
 	updatePassword
 } = require('../models/auth');
 const { validationResult } = require('express-validator');
+const moment = require('moment');
 const helper = require('../helper');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -144,7 +145,7 @@ module.exports = {
 			return helper.response(response, 400, error);
 		}
 	},
-	resetPassword: async (request, response) => {
+	resetPasswordUser: async (request, response) => {
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			const extractedErrors = [];
@@ -164,8 +165,11 @@ module.exports = {
 						confirm_password: 'Password not match'
 					});
 				} else {
-					const passwordEncript = bcrypt.hashSync(password, 10);
-					const result = await updatePassword(id, passwordEncript);
+					const data = {
+						password: bcrypt.hashSync(password, 10),
+						update_at: moment().format()
+					};
+					const result = await updatePassword(id, data);
 					return helper.response(response, 200, result);
 				}
 			} else {

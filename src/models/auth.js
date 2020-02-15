@@ -77,11 +77,11 @@ module.exports = {
 			);
 		});
 	},
-	updatePassword: (id, passwordEncript) => {
+	updatePassword: (id, data) => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`UPDATE user SET password=? WHERE id=?`,
-				[passwordEncript, id],
+				`UPDATE user SET password=?, update_at=? WHERE id=?`,
+				[data.password, data.update_at, id],
 				(error, result) => {
 					if (!error) {
 						const newResult = {

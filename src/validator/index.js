@@ -51,6 +51,17 @@ exports.resetpassword = [
 	check('confirm_password')
 		.notEmpty()
 		.withMessage('Confirm Password Cannot be Empty')
+];
+exports.updatepassword = [
+	check('old_password')
+		.notEmpty()
+		.withMessage('Confirm Password Cannot be Empty'),
+	check('new_password')
+		.notEmpty()
+		.withMessage('Password Cannot be Empty')
 		.isLength({ min: 6 })
-		.withMessage('Min Length 6 Character')
+		.withMessage('Min Length 6 Character'),
+	check('confirm_password')
+		.notEmpty()
+		.withMessage('Confirm Password Cannot be Empty')
 ];
