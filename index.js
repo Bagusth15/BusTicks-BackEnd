@@ -29,4 +29,6 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev')); // untuk menampilkan aktivitas client
+app.use(express.static('uploads/userProfile'));
+app.use(express.static('uploads/bus'));
 app.use('/', routerNavigation);
