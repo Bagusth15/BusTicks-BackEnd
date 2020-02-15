@@ -39,7 +39,7 @@ module.exports = {
 				username,
 				(error, result) => {
 					if (!error) {
-						resolve(result[0]);
+						resolve(result);
 					} else {
 						reject(new Error(error));
 					}

@@ -64,18 +64,30 @@ module.exports = {
 		const { username, password } = request.body;
 		try {
 			const result = await loginUser(username);
-			const matchingPassword = bcrypt.compareSync(password, result.password);
-			if (matchingPassword) {
-				const { id, name, email, username, status } = result;
-				const token = jwt.sign({ result }, 'RAHASIA', { expiresIn: '1h' });
-				return helper.response(response, 200, {
-					token,
-					id,
-					name,
-					email,
-					username,
-					status
-				});
+			if (result.length > 0) {
+				const matchingPassword = bcrypt.compareSync(
+					password,
+					result[0].password
+				);
+				if (matchingPassword) {
+					const { id, name, email, username, status } = result;
+					const token = jwt.sign({ result }, 'RAHASIA', { expiresIn: '1h' });
+					return helper.response(response, 200, {
+						token,
+						id,
+						name,
+						email,
+						username,
+						status
+					});
+				} else {
+					return helper.response(
+						response,
+						200,
+						[],
+						'Incorrect username and password'
+					);
+				}
 			} else {
 				return helper.response(
 					response,
@@ -97,17 +109,17 @@ module.exports = {
 				.map(err => extractedErrors.push({ [err.param]: err.msg }));
 			return helper.response(response, 200, [], extractedErrors);
 		}
-		const { email } = request.body;
+
 		try {
+			const { email } = request.body;
 			const result = await checkByEmail(email);
-			let id = result[0].id;
 			// id = bcrypt.hashSync(`${id}`, 10);
 			// const matchingPassword = bcrypt.compareSync(
 			// 	'2',
 			// 	'$2b$10$Rs1hbowM6vK8Py5517cPBOgUgNwM8rKsDSwLAF7jXesZvvCQV/3Ve'
 			// );
-			// console.log(matchingPassword);
 			if (result.length > 0) {
+				const { id, email } = result[0];
 				let transporter = nodemailer.createTransport({
 					host: 'smtp.gmail.com',
 					port: 465,
@@ -120,13 +132,13 @@ module.exports = {
 				// send mail with defined transport object
 				let info = await transporter.sendMail({
 					from: '"BusTicks"', // sender address
-					to: 'bagustri15@gmail.com', // list of receivers
+					to: email, // list of receivers
 					subject: 'BusTicks - Forgot Password', // Subject line
 					html: `<b>Click This URL for reset password </b><a href="https://www.youtube.com/">Reset Password ${id}</a>` // html body
 				});
-				console.log('Message sent: %s', info.messageId);
+				return helper.response(response, 200, result);
 			} else {
-				console.log('gagal');
+				return helper.response(response, 200, [], { data: 'Data not found' });
 			}
 		} catch (error) {
 			return helper.response(response, 400, error);
