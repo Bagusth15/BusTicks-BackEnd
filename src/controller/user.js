@@ -14,6 +14,14 @@ const nodemailer = require('nodemailer');
 
 module.exports = {
 	updateProfileUser: async (request, response) => {
+		const errors = validationResult(request);
+		if (!errors.isEmpty()) {
+			const extractedErrors = [];
+			errors
+				.array({ onlyFirstError: true })
+				.map(err => extractedErrors.push({ [err.param]: err.msg }));
+			return helper.response(response, 200, [], extractedErrors);
+		}
 		const { id } = request.params;
 		const setData = {
 			name: request.body.name,
@@ -120,6 +128,19 @@ module.exports = {
 						return helper.response(response, 200, result);
 					}
 				}
+			} else {
+				return helper.response(response, 200, [], { data: 'Data not found' });
+			}
+		} catch (error) {
+			return helper.response(response, 400, error);
+		}
+	},
+	detailUser: async (request, response) => {
+		try {
+			const { id } = request.params;
+			const result = await checkById(id);
+			if (result.length > 0) {
+				return helper.response(response, 200, result);
 			} else {
 				return helper.response(response, 200, [], { data: 'Data not found' });
 			}

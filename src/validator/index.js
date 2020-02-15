@@ -65,3 +65,20 @@ exports.updatepassword = [
 		.notEmpty()
 		.withMessage('Confirm Password Cannot be Empty')
 ];
+exports.updateProfile = [
+	check('name')
+		.notEmpty()
+		.withMessage('Name Cannot be Empty')
+		.isLength({ min: 3 })
+		.withMessage('Min Length 5 Character'),
+	check('email')
+		.notEmpty()
+		.withMessage('Email Cannot be Empty')
+		.isEmail()
+		.withMessage('Invalid Email'),
+	check('username')
+		.notEmpty()
+		.withMessage('Username Cannot be Empty')
+		.isLength({ min: 3 })
+		.withMessage('Min Length 5 Character')
+];
