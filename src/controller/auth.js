@@ -71,8 +71,10 @@ module.exports = {
 					result[0].password
 				);
 				if (matchingPassword) {
-					const { id, name, email, username, status } = result;
-					const token = jwt.sign({ result }, 'RAHASIA', { expiresIn: '1h' });
+					const { id, name, email, username, status } = result[0];
+					const token = jwt.sign({ result }, process.env.KEY_PASSWORD, {
+						expiresIn: '1h'
+					});
 					return helper.response(response, 200, {
 						token,
 						id,

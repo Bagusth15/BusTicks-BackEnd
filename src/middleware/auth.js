@@ -4,7 +4,7 @@ const helper = require('../helper');
 module.exports = {
 	authorization: (request, response, next) => {
 		const token = request.headers.authorization;
-		jwt.verify(token, 'RAHASIA', (error, result) => {
+		jwt.verify(token, process.env.KEY_PASSWORD, (error, result) => {
 			if (
 				(error && error.name === 'TokenExpiredError') ||
 				(error && error.name === 'JsonWebTokenError')

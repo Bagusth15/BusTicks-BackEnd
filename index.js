@@ -1,20 +1,16 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const routerNavigation = require('./src');
 const morgan = require('morgan');
 const cors = require('cors');
-const PORT = '127.0.0.1' || 3001;
-// const redis = require('redis');
-// const client = redis.createClient();
-
-// client.on('connect', function() {
-// 	console.log('Redis client connected');
-// });
 
 app.use(cors());
-app.listen(3001, '127.0.0.1', () => {
-	console.log(`Listening on ${PORT}:3001`);
+app.listen(process.env.APP_PORT, process.env.DB_PORT, () => {
+	console.log(
+		'Listening on ' + process.env.DB_PORT + ':' + process.env.APP_PORT
+	);
 });
 
 app.use((req, res, next) => {
