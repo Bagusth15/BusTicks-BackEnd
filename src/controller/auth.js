@@ -59,7 +59,7 @@ module.exports = {
 			const extractedErrors = [];
 			errors
 				.array({ onlyFirstError: true })
-				.map(err => extractedErrors.push({ [err.param]: err.msg }));
+				.map(err => extractedErrors.push({ error: err.msg }));
 			return helper.response(response, 200, [], extractedErrors);
 		}
 		const { username, password } = request.body;
@@ -84,20 +84,14 @@ module.exports = {
 						status
 					});
 				} else {
-					return helper.response(
-						response,
-						200,
-						[],
-						'Incorrect username and password'
-					);
+					return helper.response(response, 200, [], {
+						error: 'Incorrect username and password'
+					});
 				}
 			} else {
-				return helper.response(
-					response,
-					200,
-					[],
-					'Incorrect username and password'
-				);
+				return helper.response(response, 200, [], {
+					error: 'Incorrect username and password'
+				});
 			}
 		} catch (error) {
 			return helper.response(response, 400, error);
