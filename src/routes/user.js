@@ -14,13 +14,27 @@ const {
 uploadFile = (request, response, next) => {
 	upload(request, response, err => {
 		if (err instanceof multer.MulterError) {
-			return helper.response(response, 200, [], {
-				image: 'Extension File Must be PNG or JPG & File Size Max 5 mb'
-			});
+			return helper.response(
+				response,
+				200,
+				[],
+				[
+					{
+						error: 'Extension File Must be PNG or JPG & File Size Max 5 mb'
+					}
+				]
+			);
 		} else if (err) {
-			return helper.response(response, 200, [], {
-				image: 'Extension File Must be PNG or JPG & File Size Max 5 mb'
-			});
+			return helper.response(
+				response,
+				200,
+				[],
+				[
+					{
+						error: 'Extension File Must be PNG or JPG & File Size Max 5 mb'
+					}
+				]
+			);
 		}
 		next();
 	});
