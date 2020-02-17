@@ -1,5 +1,7 @@
 const { getCity, getCityById } = require('../models/city');
 const helper = require('../helper');
+const redis = require('redis');
+const client = redis.createClient();
 
 module.exports = {
 	getCity: async (request, response) => {
@@ -13,32 +15,33 @@ module.exports = {
 	getCityById: async (request, response) => {
 		try {
 			const { id } = request.params;
-			const result = await getCityById(id);
-			if (result.length > 0) {
-				return helper.response(response, 200, result);
-			} else {
-				return helper.response(
-					response,
-					200,
-					[],
-					[{ error: 'Data not found' }]
-				);
-			}
+			client.get(`city${id}`, async (err, data) => {
+				if (err) throw err;
+				if (data !== null) {
+					const result = JSON.parse(data);
+					return helper.response(response, 200, result);
+				} else {
+					const result = await getCityById(id);
+					if (result.length > 0) {
+						const results = JSON.stringify(result);
+						client.setex(`city${id}`, 3600, results);
+						return helper.response(response, 200, result);
+					} else {
+						return helper.response(
+							response,
+							200,
+							[],
+							[
+								{
+									error: 'Data not found'
+								}
+							]
+						);
+					}
+				}
+			});
 		} catch (error) {
 			return helper.response(response, 400, error);
 		}
 	}
-	// detailUser: async (request, response) => {
-	// 	try {
-	// 		const { id } = request.params;
-	// 		const result = await checkById(id);
-	// 		if (result.length > 0) {
-	// 			return helper.response(response, 200, result);
-	// 		} else {
-	// 			return helper.response(response, 200, [], { data: 'Data not found' });
-	// 		}
-	// 	} catch (error) {
-	// 		return helper.response(response, 400, error);
-	// 	}
-	// }
 };
