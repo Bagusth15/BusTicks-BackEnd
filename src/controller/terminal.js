@@ -31,9 +31,16 @@ module.exports = {
 						client.setex(`terminal${id}`, 3600, results);
 						return helper.response(response, 200, result);
 					} else {
-						return helper.response(response, 200, [], {
-							data: 'Data not found'
-						});
+						return helper.response(
+							response,
+							200,
+							[],
+							[
+								{
+									error: 'Data not found'
+								}
+							]
+						);
 					}
 				}
 			});
@@ -56,9 +63,16 @@ module.exports = {
 						client.setex(`terminalCity${idCity}`, 3600, results);
 						return helper.response(response, 200, result);
 					} else {
-						return helper.response(response, 200, [], {
-							data: 'Data not found'
-						});
+						return helper.response(
+							response,
+							200,
+							[],
+							[
+								{
+									error: 'Data not found'
+								}
+							]
+						);
 					}
 				}
 			});

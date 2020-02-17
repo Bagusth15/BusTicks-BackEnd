@@ -144,9 +144,16 @@ module.exports = {
 						client.setex(`schedule${id}`, 3600, results);
 						return helper.response(response, 200, result);
 					} else {
-						return helper.response(response, 200, [], {
-							data: 'Data not found'
-						});
+						return helper.response(
+							response,
+							200,
+							[],
+							[
+								{
+									error: 'Data not found'
+								}
+							]
+						);
 					}
 				}
 			});
