@@ -132,16 +132,22 @@ module.exports = {
 	getScheduleById: async (request, response) => {
 		try {
 			const { id } = request.params;
-			client.get(id, async (err, data) => {
+			client.get(`schedule${id}`, async (err, data) => {
 				if (err) throw err;
 				if (data !== null) {
 					const result = JSON.parse(data);
 					return helper.response(response, 200, result);
 				} else {
 					const result = await getScheduleById(id);
-					const results = JSON.stringify(result);
-					client.setex(id, 3600, results);
-					return helper.response(response, 200, result);
+					if (result.length > 0) {
+						const results = JSON.stringify(result);
+						client.setex(`schedule${id}`, 3600, results);
+						return helper.response(response, 200, result);
+					} else {
+						return helper.response(response, 200, [], {
+							data: 'Data not found'
+						});
+					}
 				}
 			});
 		} catch (error) {
