@@ -126,7 +126,15 @@ module.exports = {
 					result[0].password
 				);
 				if (matchingPassword) {
-					const { id, name, email, username, status } = result[0];
+					const {
+						id,
+						name,
+						email,
+						username,
+						image,
+						create_at,
+						update_at
+					} = result[0];
 					const token = jwt.sign({ result }, process.env.KEY_PASSWORD, {
 						expiresIn: '1h'
 					});
@@ -136,7 +144,9 @@ module.exports = {
 						name,
 						email,
 						username,
-						status
+						image,
+						create_at,
+						update_at
 					});
 				} else {
 					return helper.response(

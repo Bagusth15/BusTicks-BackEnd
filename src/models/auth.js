@@ -50,7 +50,7 @@ module.exports = {
 	loginUser: username => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				'SELECT id, username, name, email, status, password FROM user WHERE username = ?',
+				'SELECT * FROM user WHERE username = ?',
 				username,
 				(error, result) => {
 					if (!error) {
