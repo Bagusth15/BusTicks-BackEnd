@@ -1,6 +1,7 @@
 const {
 	loginUser,
-	checkUsernameEmail,
+	checkUsername,
+	checkEmail,
 	postUser,
 	checkByEmail,
 	checkById,
@@ -15,15 +16,33 @@ const nodemailer = require('nodemailer');
 
 module.exports = {
 	registerUser: async (request, response) => {
+		const { name, email, username, password, confirm_password } = request.body;
 		const errors = validationResult(request);
+		if (
+			name == '' &&
+			email == '' &&
+			username == '' &&
+			password == '' &&
+			confirm_password == ''
+		) {
+			return helper.response(
+				response,
+				200,
+				[],
+				[
+					{
+						error: 'All column must be filled'
+					}
+				]
+			);
+		}
 		if (!errors.isEmpty()) {
 			const extractedErrors = [];
 			errors
 				.array({ onlyFirstError: true })
-				.map(err => extractedErrors.push({ [err.param]: err.msg }));
+				.map(err => extractedErrors.push({ error: err.msg }));
 			return helper.response(response, 200, [], extractedErrors);
 		}
-		const { name, email, username, password, confirm_password } = request.body;
 		try {
 			const setData = {
 				name: name,
@@ -32,18 +51,42 @@ module.exports = {
 				password: bcrypt.hashSync(password, 10),
 				status: 1
 			};
-			let result = await checkUsernameEmail(username, email);
-			if (result.length > 0) {
-				return helper.response(response, 200, [], {
-					email: 'Username and Email already used',
-					username: 'Username and Email already used'
-				});
+			const resultUsername = await checkUsername(username);
+			const resultEmail = await checkEmail(email);
+			if (resultUsername.length > 0) {
+				return helper.response(
+					response,
+					200,
+					[],
+					[
+						{
+							error: 'Username already used'
+						}
+					]
+				);
+			} else if (resultEmail.length > 0) {
+				return helper.response(
+					response,
+					200,
+					[],
+					[
+						{
+							error: 'Email already used'
+						}
+					]
+				);
 			} else {
 				if (password != confirm_password) {
-					return helper.response(response, 200, [], {
-						password: 'Password not match',
-						confirm_password: 'Password not match'
-					});
+					return helper.response(
+						response,
+						200,
+						[],
+						[
+							{
+								error: 'Password not match'
+							}
+						]
+					);
 				} else {
 					result = await postUser(setData);
 					return helper.response(response, 200, result);
@@ -54,6 +97,19 @@ module.exports = {
 		}
 	},
 	loginUser: async (request, response) => {
+		const { username, password } = request.body;
+		if (username == '' && password == '') {
+			return helper.response(
+				response,
+				200,
+				[],
+				[
+					{
+						error: 'All column must be filled'
+					}
+				]
+			);
+		}
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			const extractedErrors = [];
@@ -62,7 +118,6 @@ module.exports = {
 				.map(err => extractedErrors.push({ error: err.msg }));
 			return helper.response(response, 200, [], extractedErrors);
 		}
-		const { username, password } = request.body;
 		try {
 			const result = await loginUser(username);
 			if (result.length > 0) {
@@ -84,14 +139,28 @@ module.exports = {
 						status
 					});
 				} else {
-					return helper.response(response, 200, [], {
-						error: 'Incorrect username and password'
-					});
+					return helper.response(
+						response,
+						200,
+						[],
+						[
+							{
+								error: 'Incorrect username and password'
+							}
+						]
+					);
 				}
 			} else {
-				return helper.response(response, 200, [], {
-					error: 'Incorrect username and password'
-				});
+				return helper.response(
+					response,
+					200,
+					[],
+					[
+						{
+							error: 'Incorrect username and password'
+						}
+					]
+				);
 			}
 		} catch (error) {
 			return helper.response(response, 400, error);
@@ -103,7 +172,7 @@ module.exports = {
 			const extractedErrors = [];
 			errors
 				.array({ onlyFirstError: true })
-				.map(err => extractedErrors.push({ [err.param]: err.msg }));
+				.map(err => extractedErrors.push({ error: err.msg }));
 			return helper.response(response, 200, [], extractedErrors);
 		}
 
@@ -135,31 +204,54 @@ module.exports = {
 				});
 				return helper.response(response, 200, result);
 			} else {
-				return helper.response(response, 200, [], { data: 'Data not found' });
+				return helper.response(
+					response,
+					200,
+					[],
+					[{ error: 'Email not found' }]
+				);
 			}
 		} catch (error) {
 			return helper.response(response, 400, error);
 		}
 	},
 	resetPasswordUser: async (request, response) => {
+		const { id } = request.params;
+		const { password, confirm_password } = request.body;
+		if (password == '' && confirm_password == '') {
+			return helper.response(
+				response,
+				200,
+				[],
+				[
+					{
+						error: 'All column must be filled'
+					}
+				]
+			);
+		}
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			const extractedErrors = [];
 			errors
 				.array({ onlyFirstError: true })
-				.map(err => extractedErrors.push({ [err.param]: err.msg }));
+				.map(err => extractedErrors.push({ error: err.msg }));
 			return helper.response(response, 200, [], extractedErrors);
 		}
 		try {
-			const { id } = request.params;
-			let { password, confirm_password } = request.body;
 			const result = await checkById(id);
 			if (result.length > 0) {
 				if (password != confirm_password) {
-					return helper.response(response, 200, [], {
-						password: 'Password not match',
-						confirm_password: 'Password not match'
-					});
+					return helper.response(
+						response,
+						200,
+						[],
+						[
+							{
+								error: 'Password not match'
+							}
+						]
+					);
 				} else {
 					const data = {
 						password: bcrypt.hashSync(password, 10),
@@ -169,7 +261,12 @@ module.exports = {
 					return helper.response(response, 200, result);
 				}
 			} else {
-				return helper.response(response, 200, [], { data: 'Data not found' });
+				return helper.response(
+					response,
+					200,
+					[],
+					[{ error: 'User not found' }]
+				);
 			}
 		} catch (error) {
 			return helper.response(response, 400, error);

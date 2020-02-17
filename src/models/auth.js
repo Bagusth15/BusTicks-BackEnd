@@ -1,11 +1,26 @@
 const connection = require('../config/mysql');
 
 module.exports = {
-	checkUsernameEmail: (username, email) => {
+	checkUsername: username => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`SELECT username, email FROM user WHERE username = ? OR email = ?`,
-				[username, email],
+				`SELECT username, email FROM user WHERE username = ?`,
+				username,
+				(error, result) => {
+					if (!error) {
+						resolve(result);
+					} else {
+						reject(new Error(error));
+					}
+				}
+			);
+		});
+	},
+	checkEmail: email => {
+		return new Promise((resolve, reject) => {
+			connection.query(
+				`SELECT username, email FROM user WHERE email = ?`,
+				email,
 				(error, result) => {
 					if (!error) {
 						resolve(result);
