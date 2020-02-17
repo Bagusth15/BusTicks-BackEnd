@@ -80,7 +80,7 @@ module.exports = {
 	checkById: id => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				'SELECT id FROM user WHERE id = ?',
+				'SELECT id, key_user FROM user WHERE id = ?',
 				id,
 				(error, result) => {
 					if (!error) {
@@ -103,6 +103,37 @@ module.exports = {
 							id: id
 						};
 						resolve(newResult);
+					} else {
+						reject(new Error(error));
+					}
+				}
+			);
+		});
+	},
+	updateKeys: dataReset => {
+		return new Promise((resolve, reject) => {
+			console.log(dataReset);
+			connection.query(
+				`UPDATE user SET key_user=?, update_at=? WHERE id=?`,
+				[dataReset.userKeys, dataReset.update_at, dataReset.id],
+				(error, result) => {
+					if (!error) {
+						resolve(result);
+					} else {
+						reject(new Error(error));
+					}
+				}
+			);
+		});
+	},
+	checkTimeKey: key_user => {
+		return new Promise((resolve, reject) => {
+			connection.query(
+				`SELECT id, TIMESTAMPDIFF(MINUTE, NOW(), update_at) AS minute_diff FROM user WHERE key_user = ?`,
+				key_user,
+				(error, result) => {
+					if (!error) {
+						resolve(result);
 					} else {
 						reject(new Error(error));
 					}

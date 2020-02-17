@@ -7,12 +7,14 @@ const schedule = require('./routes/schedule');
 const terminal = require('./routes/terminal');
 const city = require('./routes/city');
 const bus = require('./routes/bus');
+const booking = require('./routes/booking');
 
 Route.use('/auth', auth)
 	.use('/user', user)
 	.use('/schedule', schedule)
 	.use('/terminal', terminal)
 	.use('/city', city)
-	.use('/bus', bus);
+	.use('/bus', bus)
+	.use('/booking', booking);
 
 module.exports = Route;

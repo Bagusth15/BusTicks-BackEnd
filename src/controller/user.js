@@ -10,7 +10,6 @@ const moment = require('moment');
 const helper = require('../helper');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
-const nodemailer = require('nodemailer');
 
 module.exports = {
 	updateProfileUser: async (request, response) => {

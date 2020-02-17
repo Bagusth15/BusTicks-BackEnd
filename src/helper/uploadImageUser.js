@@ -1,12 +1,16 @@
 const multer = require('multer');
+const randomNumber = 6;
+const randomNumbers = Math.floor(
+	Math.pow(10, randomNumber - 1) +
+		Math.random() * 9 * Math.pow(10, randomNumber - 1)
+);
 
 const storage = multer.diskStorage({
 	destination: (request, file, callback) => {
 		callback(null, './uploads/userProfile');
 	},
 	filename: (request, file, callback) => {
-		console.log(file);
-		callback(null, new Date().toISOString() + file.originalname);
+		callback(null, randomNumbers + file.originalname);
 	}
 });
 const fileFilter = (request, file, callback) => {

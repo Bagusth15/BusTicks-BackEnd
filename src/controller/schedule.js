@@ -43,31 +43,31 @@ module.exports = {
 				? (searchTimeDeparture = '')
 				: searchTimeDeparture == 1
 				? (searchTimeDeparture =
-						'AND schedule.departure_time BETWEEN "00:00:00" AND "06:00:00"')
+						'AND TIME(schedule.departure_time) BETWEEN "00:00:00" AND "06:00:00"')
 				: searchTimeDeparture == 2
 				? (searchTimeDeparture =
-						'AND schedule.departure_time BETWEEN "06:00:00" AND "12:00:00"')
+						'AND TIME(schedule.departure_time) BETWEEN "06:00:00" AND "12:00:00"')
 				: searchTimeDeparture == 3
 				? (searchTimeDeparture =
-						'AND schedule.departure_time BETWEEN "12:00:00" AND "18:00:00"')
+						'AND TIME(schedule.departure_time) BETWEEN "12:00:00" AND "18:00:00"')
 				: searchTimeDeparture == 4
 				? (searchTimeDeparture =
-						'AND schedule.departure_time BETWEEN "18:00:00" AND "00:00:00"')
+						'AND TIME(schedule.departure_time) BETWEEN "18:00:00" AND "00:00:00"')
 				: (searchTimeDeparture = '');
 			searchTimeArrival == 0 || searchTimeArrival == undefined
 				? (searchTimeArrival = '')
 				: searchTimeArrival == 1
 				? (searchTimeArrival =
-						'AND schedule.departure_time BETWEEN "00:00:00" AND "06:00:00"')
+						'AND TIME(schedule.arrival_time) BETWEEN "00:00:00" AND "06:00:00"')
 				: searchTimeArrival == 2
 				? (searchTimeArrival =
-						'AND schedule.departure_time BETWEEN "06:00:00" AND "12:00:00"')
+						'AND TIME(schedule.arrival_time) BETWEEN "06:00:00" AND "12:00:00"')
 				: searchTimeArrival == 3
 				? (searchTimeArrival =
-						'AND schedule.departure_time BETWEEN "12:00:00" AND "18:00:00"')
+						'AND TIME(schedule.arrival_time) BETWEEN "12:00:00" AND "18:00:00"')
 				: searchTimeArrival == 4
 				? (searchTimeArrival =
-						'AND schedule.departure_time BETWEEN "18:00:00" AND "00:00:00"')
+						'AND TIME(schedule.arrival_time) BETWEEN "18:00:00" AND "00:00:00"')
 				: (searchTimeArrival = '');
 			sort == '' || sort == undefined
 				? (sort = 'schedule.id')
@@ -91,40 +91,40 @@ module.exports = {
 				searchTimeArrival +
 				sort;
 			const splitId = createId.replace(/\s/g, '');
-			client.get(splitId, async (err, data) => {
-				if (err) throw err;
-				if (data !== null) {
-					const result = JSON.parse(data);
-					return helper.response(response, 200, {
-						result,
-						limit,
-						currentPage,
-						totalPage,
-						totalItems
-					});
-				} else {
-					const result = await getSchedule(
-						limit,
-						skip,
-						searcNameBus,
-						searchTerminalDeparture,
-						searchTerminalArrival,
-						searchTimeDeparture,
-						searchTimeArrival,
-						sort
-					);
-					const results = JSON.stringify(result);
-					client.setex(splitId, 3600, results);
+			// client.get(splitId, async (err, data) => {
+			// 	if (err) throw err;
+			// 	if (data !== null) {
+			// 		const result = JSON.parse(data);
+			// 		return helper.response(response, 200, {
+			// 			result,
+			// 			limit,
+			// 			currentPage,
+			// 			totalPage,
+			// 			totalItems
+			// 		});
+			// 	} else {
+			const result = await getSchedule(
+				limit,
+				skip,
+				searcNameBus,
+				searchTerminalDeparture,
+				searchTerminalArrival,
+				searchTimeDeparture,
+				searchTimeArrival,
+				sort
+			);
+			// const results = JSON.stringify(result);
+			// client.setex(splitId, 3600, results);
 
-					return helper.response(response, 200, {
-						result,
-						limit,
-						currentPage,
-						totalPage,
-						totalItems
-					});
-				}
+			return helper.response(response, 200, {
+				result,
+				limit,
+				currentPage,
+				totalPage,
+				totalItems
 			});
+			// 	}
+			// });
 		} catch (error) {
 			return helper.response(response, 400, error);
 		}

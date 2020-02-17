@@ -5,8 +5,8 @@ const upload = require('../helper/uploadImageUser');
 const helper = require('../helper');
 const multer = require('multer');
 
-const {} = require('../controller/booking');
+const { getSeat } = require('../controller/booking');
 
-// Route.get('/:id', detailUser);
+Route.get('/seat/:idSchedule', getSeat);
 
 module.exports = Route;

@@ -33,7 +33,7 @@ module.exports = {
 	) => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`SELECT * FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE bus.name LIKE '%${searcNameBus}%' ${searchTerminalDeparture} ${searchTerminalArrival} ${searchTimeDeparture} ${searchTimeArrival} ORDER BY ${sort} ASC LIMIT ${limit} OFFSET ${skip}`,
+				`SELECT bus.name, bus.total_seat, bus.format_seat, schedule.departure_location, schedule.departure_time, schedule.arrival_location, schedule.arrival_time, schedule.price FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE bus.name LIKE '%${searcNameBus}%' ${searchTerminalDeparture} ${searchTerminalArrival} ${searchTimeDeparture} ${searchTimeArrival} ORDER BY ${sort} ASC LIMIT ${limit} OFFSET ${skip}`,
 				(error, result) => {
 					if (!error) {
 						resolve(result);

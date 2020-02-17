@@ -5,7 +5,9 @@ const {
 	postUser,
 	checkByEmail,
 	checkById,
-	updatePassword
+	updatePassword,
+	updateKeys,
+	checkTimeKey
 } = require('../models/auth');
 const { validationResult } = require('express-validator');
 const moment = require('moment');
@@ -13,6 +15,10 @@ const helper = require('../helper');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const userKey = 4;
+const userKeys = Math.floor(
+	Math.pow(10, userKey - 1) + Math.random() * 9 * Math.pow(10, userKey - 1)
+);
 
 module.exports = {
 	registerUser: async (request, response) => {
@@ -189,11 +195,6 @@ module.exports = {
 		try {
 			const { email } = request.body;
 			const result = await checkByEmail(email);
-			// id = bcrypt.hashSync(`${id}`, 10);
-			// const matchingPassword = bcrypt.compareSync(
-			// 	'2',
-			// 	'$2b$10$Rs1hbowM6vK8Py5517cPBOgUgNwM8rKsDSwLAF7jXesZvvCQV/3Ve'
-			// );
 			if (result.length > 0) {
 				const { id, email } = result[0];
 				let transporter = nodemailer.createTransport({
@@ -210,8 +211,14 @@ module.exports = {
 					from: '"BusTicks"', // sender address
 					to: email, // list of receivers
 					subject: 'BusTicks - Forgot Password', // Subject line
-					html: `<b>Click This URL for reset password </b><a href="https://www.youtube.com/">Reset Password ${id}</a>` // html body
+					html: `<b>Please input the code for reset password : </b> ${userKeys}` // html body
 				});
+				const dataReset = {
+					id: id,
+					userKeys: userKeys,
+					update_at: moment().format()
+				};
+				await updateKeys(dataReset);
 				return helper.response(response, 200, result);
 			} else {
 				return helper.response(
@@ -227,8 +234,8 @@ module.exports = {
 	},
 	resetPasswordUser: async (request, response) => {
 		const { id } = request.params;
-		const { password, confirm_password } = request.body;
-		if (password == '' && confirm_password == '') {
+		const { password, confirm_password, key_user } = request.body;
+		if (password == '' && confirm_password == '' && key_user == '') {
 			return helper.response(
 				response,
 				200,
@@ -263,12 +270,41 @@ module.exports = {
 						]
 					);
 				} else {
-					const data = {
-						password: bcrypt.hashSync(password, 10),
-						update_at: moment().format()
-					};
-					const result = await updatePassword(id, data);
-					return helper.response(response, 200, result);
+					console.log(key_user);
+					const result = await checkTimeKey(key_user);
+					if (result.length > 0) {
+						const { id, minute_diff } = result[0];
+						if (minute_diff < -5) {
+							return helper.response(
+								response,
+								200,
+								[],
+								[
+									{
+										error: 'User key expired'
+									}
+								]
+							);
+						} else {
+							const data = {
+								password: bcrypt.hashSync(password, 10),
+								update_at: moment().format()
+							};
+							const result = await updatePassword(id, data);
+							return helper.response(response, 200, result);
+						}
+					} else {
+						return helper.response(
+							response,
+							200,
+							[],
+							[
+								{
+									error: 'User key not valid'
+								}
+							]
+						);
+					}
 				}
 			} else {
 				return helper.response(
