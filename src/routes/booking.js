@@ -1,12 +1,15 @@
 const express = require('express');
 const Route = express.Router();
 const validator = require('../validator');
-const upload = require('../helper/uploadImageUser');
-const helper = require('../helper');
-const multer = require('multer');
 
-const { getSeat } = require('../controller/booking');
+const {
+	getBooking,
+	getBookingById,
+	postBooking
+} = require('../controller/booking');
 
-Route.get('/seat/:idSchedule', getSeat);
+Route.get('/', getBooking);
+Route.get('/:id', getBookingById);
+Route.post('/', postBooking);
 
 module.exports = Route;

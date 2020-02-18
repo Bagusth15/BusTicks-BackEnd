@@ -233,7 +233,6 @@ module.exports = {
 		}
 	},
 	resetPasswordUser: async (request, response) => {
-		const { id } = request.params;
 		const { password, confirm_password, key_user } = request.body;
 		if (password == '' && confirm_password == '' && key_user == '') {
 			return helper.response(
@@ -256,63 +255,52 @@ module.exports = {
 			return helper.response(response, 200, [], extractedErrors);
 		}
 		try {
-			const result = await checkById(id);
-			if (result.length > 0) {
-				if (password != confirm_password) {
-					return helper.response(
-						response,
-						200,
-						[],
-						[
-							{
-								error: 'Password not match'
-							}
-						]
-					);
-				} else {
-					console.log(key_user);
-					const result = await checkTimeKey(key_user);
-					if (result.length > 0) {
-						const { id, minute_diff } = result[0];
-						if (minute_diff < -5) {
-							return helper.response(
-								response,
-								200,
-								[],
-								[
-									{
-										error: 'User key expired'
-									}
-								]
-							);
-						} else {
-							const data = {
-								password: bcrypt.hashSync(password, 10),
-								update_at: moment().format()
-							};
-							const result = await updatePassword(id, data);
-							return helper.response(response, 200, result);
+			if (password != confirm_password) {
+				return helper.response(
+					response,
+					200,
+					[],
+					[
+						{
+							error: 'Password not match'
 						}
-					} else {
+					]
+				);
+			} else {
+				const result = await checkTimeKey(key_user);
+				if (result.length > 0) {
+					const { id, minute_diff } = result[0];
+					if (minute_diff < -5) {
 						return helper.response(
 							response,
 							200,
 							[],
 							[
 								{
-									error: 'User key not valid'
+									error: 'User key expired'
 								}
 							]
 						);
+					} else {
+						const data = {
+							password: bcrypt.hashSync(password, 10),
+							update_at: moment().format()
+						};
+						const result = await updatePassword(id, data);
+						return helper.response(response, 200, result);
 					}
+				} else {
+					return helper.response(
+						response,
+						200,
+						[],
+						[
+							{
+								error: 'User key not valid'
+							}
+						]
+					);
 				}
-			} else {
-				return helper.response(
-					response,
-					200,
-					[],
-					[{ error: 'User not found' }]
-				);
 			}
 		} catch (error) {
 			return helper.response(response, 400, error);

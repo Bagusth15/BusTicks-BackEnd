@@ -12,6 +12,6 @@ const {
 Route.post('/login', validator.login, loginUser);
 Route.post('/register', validator.register, registerUser);
 Route.post('/forgot', validator.forgot, forgotPasswordUser);
-Route.put('/reset/:id', validator.resetpassword, resetPasswordUser);
+Route.put('/reset/', validator.resetpassword, resetPasswordUser);
 
 module.exports = Route;

@@ -1,10 +1,22 @@
 const connection = require('../config/mysql');
 
 module.exports = {
-	getPage: limit => {
+	getPage: (
+		limit,
+		skip,
+		searcNameBus,
+		searchDate,
+		searchCityDeparture,
+		searchCityArrival,
+		searchTerminalDeparture,
+		searchTerminalArrival,
+		searchTimeDeparture,
+		searchTimeArrival,
+		sort
+	) => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				'SELECT count(*) as numRows FROM schedule',
+				`SELECT count(*) as numRows FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE bus.name LIKE '%${searcNameBus}%' ${searchDate} ${searchCityDeparture} ${searchCityArrival} ${searchTerminalDeparture} ${searchTerminalArrival} ${searchTimeDeparture} ${searchTimeArrival} ORDER BY ${sort} ASC LIMIT ${limit} OFFSET ${skip}`,
 				(error, result) => {
 					const numRows = result[0].numRows;
 					const numPages = Math.ceil(numRows / limit);
@@ -25,6 +37,9 @@ module.exports = {
 		limit,
 		skip,
 		searcNameBus,
+		searchDate,
+		searchCityDeparture,
+		searchCityArrival,
 		searchTerminalDeparture,
 		searchTerminalArrival,
 		searchTimeDeparture,
@@ -33,7 +48,7 @@ module.exports = {
 	) => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`SELECT bus.name, bus.total_seat, bus.format_seat, schedule.departure_location, schedule.departure_time, schedule.arrival_location, schedule.arrival_time, schedule.price FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE bus.name LIKE '%${searcNameBus}%' ${searchTerminalDeparture} ${searchTerminalArrival} ${searchTimeDeparture} ${searchTimeArrival} ORDER BY ${sort} ASC LIMIT ${limit} OFFSET ${skip}`,
+				`SELECT bus.name, bus.total_seat, bus.format_seat, schedule.departure_location, schedule.departure_time, schedule.arrival_location, schedule.arrival_time, schedule.price FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE bus.name LIKE '%${searcNameBus}%' ${searchDate} ${searchCityDeparture} ${searchCityArrival} ${searchTerminalDeparture} ${searchTerminalArrival} ${searchTimeDeparture} ${searchTimeArrival} ORDER BY ${sort} ASC LIMIT ${limit} OFFSET ${skip}`,
 				(error, result) => {
 					if (!error) {
 						resolve(result);
@@ -48,6 +63,20 @@ module.exports = {
 		return new Promise((resolve, reject) => {
 			connection.query(
 				`SELECT * FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE schedule.id=${id}`,
+				(error, result) => {
+					if (!error) {
+						resolve(result);
+					} else {
+						reject(new Error(error));
+					}
+				}
+			);
+		});
+	},
+	getSeat: id => {
+		return new Promise((resolve, reject) => {
+			connection.query(
+				`SELECT seat as id FROM bookingdetail WHERE id_schedule=${id}`,
 				(error, result) => {
 					if (!error) {
 						resolve(result);

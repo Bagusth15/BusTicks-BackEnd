@@ -1,4 +1,9 @@
-const { getPage, getSchedule, getScheduleById } = require('../models/schedule');
+const {
+	getPage,
+	getSchedule,
+	getScheduleById,
+	getSeat
+} = require('../models/schedule');
 const { validationResult } = require('express-validator');
 const moment = require('moment');
 const helper = require('../helper');
@@ -16,6 +21,9 @@ module.exports = {
 				limit,
 				page,
 				searcNameBus,
+				searchDate,
+				searchCityDeparture,
+				searchCityArrival,
 				searchTerminalDeparture,
 				searchTerminalArrival,
 				searchTimeDeparture,
@@ -31,6 +39,17 @@ module.exports = {
 			searcNameBus == '' || searcNameBus == undefined
 				? (searcNameBus = '')
 				: (searcNameBus = searcNameBus);
+			searchDate == '' || searchDate == undefined
+				? (searchDate = '')
+				: (searchDate = `AND DATE(schedule.departure_time)='${searchDate}'`);
+			searchCityDeparture == '' || searchCityDeparture == undefined
+				? (searchCityDeparture = '')
+				: (searchCityDeparture =
+						'AND schedule.departure_city=' + searchCityDeparture);
+			searchCityArrival == '' || searchCityArrival == undefined
+				? (searchCityArrival = '')
+				: (searchCityArrival =
+						'AND schedule.arrival_city=' + searchCityArrival);
 			searchTerminalDeparture == '' || searchTerminalDeparture == undefined
 				? (searchTerminalDeparture = '')
 				: (searchTerminalDeparture =
@@ -78,13 +97,28 @@ module.exports = {
 				: (sort = 'schedule.price');
 
 			const skip = (page - 1) * limit;
-			const total = await getPage(limit);
+			const total = await getPage(
+				limit,
+				skip,
+				searcNameBus,
+				searchDate,
+				searchCityDeparture,
+				searchCityArrival,
+				searchTerminalDeparture,
+				searchTerminalArrival,
+				searchTimeDeparture,
+				searchTimeArrival,
+				sort
+			);
 			const { totalPage, totalItems } = total;
 			const currentPage = parseInt(page);
 			const createId =
 				limit +
 				skip +
 				searcNameBus +
+				searchDate +
+				searchCityDeparture +
+				searchCityArrival +
 				searchTerminalDeparture +
 				searchTerminalArrival +
 				searchTimeDeparture +
@@ -107,6 +141,9 @@ module.exports = {
 				limit,
 				skip,
 				searcNameBus,
+				searchDate,
+				searchCityDeparture,
+				searchCityArrival,
 				searchTerminalDeparture,
 				searchTerminalArrival,
 				searchTimeDeparture,
@@ -132,31 +169,64 @@ module.exports = {
 	getScheduleById: async (request, response) => {
 		try {
 			const { id } = request.params;
-			client.get(`schedule${id}`, async (err, data) => {
-				if (err) throw err;
-				if (data !== null) {
-					const result = JSON.parse(data);
-					return helper.response(response, 200, result);
-				} else {
-					const result = await getScheduleById(id);
-					if (result.length > 0) {
-						const results = JSON.stringify(result);
-						client.setex(`schedule${id}`, 3600, results);
-						return helper.response(response, 200, result);
-					} else {
-						return helper.response(
-							response,
-							200,
-							[],
-							[
-								{
-									error: 'Data not found'
-								}
-							]
-						);
-					}
-				}
-			});
+			// client.get(`schedule${id}`, async (err, data) => {
+			// 	if (err) throw err;
+			// 	if (data !== null) {
+			// 		const result = JSON.parse(data);
+			// 		return helper.response(response, 200, result);
+			// 	} else {
+
+			const result = await getScheduleById(id);
+			if (result.length > 0) {
+				// const results = JSON.stringify(result);
+				// client.setex(`schedule${id}`, 3600, results);
+
+				return helper.response(response, 200, result);
+			} else {
+				return helper.response(
+					response,
+					200,
+					[],
+					[
+						{
+							error: 'Data not found'
+						}
+					]
+				);
+			}
+			// 	}
+			// });
+		} catch (error) {
+			return helper.response(response, 400, error);
+		}
+	},
+	getSeat: async (request, response) => {
+		try {
+			const { id } = request.params;
+			const seat = [];
+			const result = await getScheduleById(id);
+			if (result.length > 0) {
+				const { total_seat } = result[0];
+				const results = await getSeat(id);
+				results.forEach(function(item) {
+					seat.push(item);
+				});
+				return helper.response(response, 200, {
+					total_seat: total_seat,
+					seat: seat
+				});
+			} else {
+				return helper.response(
+					response,
+					200,
+					[],
+					[
+						{
+							error: 'Data not found'
+						}
+					]
+				);
+			}
 		} catch (error) {
 			return helper.response(response, 400, error);
 		}

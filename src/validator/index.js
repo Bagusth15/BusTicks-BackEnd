@@ -50,7 +50,10 @@ exports.resetpassword = [
 		.withMessage('Min Length 6 Character'),
 	check('confirm_password')
 		.notEmpty()
-		.withMessage('Confirm Password Cannot be Empty')
+		.withMessage('Confirm Password Cannot be Empty'),
+	check('key_user')
+		.notEmpty()
+		.withMessage('Key User Cannot be Empty')
 ];
 exports.updatepassword = [
 	check('old_password')
