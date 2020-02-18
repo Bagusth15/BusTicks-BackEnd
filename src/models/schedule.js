@@ -86,5 +86,48 @@ module.exports = {
 				}
 			);
 		});
+	},
+	checkSeat: () => {
+		return new Promise((resolve, reject) => {
+			connection.query(
+				`SELECT id, TIMESTAMPDIFF(MINUTE, NOW(), create_at) AS minute_diff FROM booking WHERE payment_status = 'pending'`,
+				(error, result) => {
+					if (!error) {
+						resolve(result);
+					} else {
+						reject(new Error(error));
+					}
+				}
+			);
+		});
+	},
+	putBooking: id => {
+		return new Promise((resolve, reject) => {
+			connection.query(
+				`UPDATE booking SET payment_status='expired', payment_link='' WHERE id=${id}`,
+				(error, result) => {
+					if (!error) {
+						resolve(result);
+					} else {
+						reject(new Error(error));
+					}
+				}
+			);
+		});
+	},
+	deleteSeat: id => {
+		return new Promise((resolve, reject) => {
+			connection.query(
+				`DELETE FROM bookingdetail WHERE id_booking=?`,
+				id,
+				(error, result) => {
+					if (!error) {
+						resolve(result);
+					} else {
+						reject(new Error(error));
+					}
+				}
+			);
+		});
 	}
 };

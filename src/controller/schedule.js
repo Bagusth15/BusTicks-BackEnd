@@ -2,7 +2,10 @@ const {
 	getPage,
 	getSchedule,
 	getScheduleById,
-	getSeat
+	getSeat,
+	checkSeat,
+	deleteSeat,
+	putBooking
 } = require('../models/schedule');
 const { validationResult } = require('express-validator');
 const moment = require('moment');
@@ -95,7 +98,15 @@ module.exports = {
 				: sort == 'arrived_time'
 				? (sort = 'schedule.arrived_time')
 				: (sort = 'schedule.price');
-
+			const check = await checkSeat();
+			check.forEach(async item => {
+				if (item.minute_diff < -30) {
+					await putBooking(item.id);
+					await deleteSeat(item.id);
+				} else {
+					console.log(`${item.minute_diff} < -30`);
+				}
+			});
 			const skip = (page - 1) * limit;
 			const total = await getPage(
 				limit,

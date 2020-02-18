@@ -15,10 +15,12 @@ module.exports = {
 	getBookingById: id => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`SELECT * FROM booking WHERE id=?`,
+				`SELECT booking.id, user.email, booking.invoice, booking.id_schedule, booking.total_price, booking.payment_link, booking.payment_status, booking.create_at, booking.update_at FROM booking JOIN user ON booking.id_user = user.id WHERE booking.id=?`,
 				id,
 				(error, result) => {
 					if (!error) {
+						delete result[0].password;
+						delete result[0].key_user;
 						resolve(result);
 					} else {
 						reject(new Error(error));
@@ -106,11 +108,11 @@ module.exports = {
 			);
 		});
 	},
-	updateBooking: (Total, id) => {
+	updateBooking: (result, Total, id) => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`UPDATE booking SET total_price = ? WHERE id=?`,
-				[Total, id],
+				`UPDATE booking SET total_price = ?, payment_link=?, payment_status='pending' WHERE id=?`,
+				[Total, result, id],
 				(error, result) => {
 					if (!error) {
 						resolve(result);

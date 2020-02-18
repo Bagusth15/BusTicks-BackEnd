@@ -13,11 +13,6 @@ const { validationResult } = require('express-validator');
 const moment = require('moment');
 const helper = require('../helper');
 const nodemailer = require('nodemailer');
-const lengthInvoice = 6;
-const invoicegenerate = Math.floor(
-	Math.pow(10, lengthInvoice - 1) +
-		Math.random() * 9 * Math.pow(10, lengthInvoice - 1)
-);
 
 module.exports = {
 	getBooking: async (request, response) => {
@@ -53,6 +48,11 @@ module.exports = {
 		}
 	},
 	postBooking: async (request, response) => {
+		const lengthInvoice = 9;
+		const invoicegenerate = Math.floor(
+			Math.pow(10, lengthInvoice - 1) +
+				Math.random() * 9 * Math.pow(10, lengthInvoice - 1)
+		);
 		try {
 			setData = {
 				id_user: request.body.id_user,
@@ -70,7 +70,6 @@ module.exports = {
 			} else {
 				let result = await postBooking(setData);
 				const { id, id_schedule } = result;
-				// console.log(id);
 				booking.map(async item => {
 					result = await checkingPrice(id_schedule);
 					const { price } = result[0];
@@ -85,9 +84,14 @@ module.exports = {
 					result = await postBookingDetail(setDataBooking);
 					result = await getTotal(id);
 					const { Total } = result[0];
-					result = await updateBooking(Total, id);
+					result = await createPayment(id, Total);
+					result = await updateBooking(result, Total, id);
+					result = await getBookingById(id);
+					for (let i = 0; i < result.length; i++) {
+						result[i].booking = await getBookingDetails(result[i].id);
+					}
+					return helper.response(response, 200, result);
 				});
-				return helper.response(response, 200, result);
 			}
 		} catch (error) {
 			return helper.response(response, 400, error);

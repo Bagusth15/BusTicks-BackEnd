@@ -8,6 +8,7 @@ const terminal = require('./routes/terminal');
 const city = require('./routes/city');
 const bus = require('./routes/bus');
 const booking = require('./routes/booking');
+const payment = require('./routes/payment');
 
 Route.use('/auth', auth)
 	.use('/user', user)
@@ -15,6 +16,7 @@ Route.use('/auth', auth)
 	.use('/terminal', terminal)
 	.use('/city', city)
 	.use('/bus', bus)
-	.use('/booking', booking);
+	.use('/booking', booking)
+	.use('/payment', payment);
 
 module.exports = Route;
