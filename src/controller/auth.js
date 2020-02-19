@@ -202,8 +202,8 @@ module.exports = {
 					port: 465,
 					secure: true, // true for 465, false for other ports
 					auth: {
-						user: 'memo.in.aja@gmail.com', // generated ethereal user
-						pass: 'Memo050798' // generated ethereal password
+						user: 'bagustri15@gmail.com', // generated ethereal user
+						pass: 'bagus630' // generated ethereal password
 					}
 				});
 				// send mail with defined transport object
