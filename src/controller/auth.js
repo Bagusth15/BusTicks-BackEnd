@@ -189,11 +189,7 @@ module.exports = {
 		}
 
 		try {
-			const userKey = 4;
-			const userKeys = Math.floor(
-				Math.pow(10, userKey - 1) +
-					Math.random() * 9 * Math.pow(10, userKey - 1)
-			);
+			const userKeys = Math.floor(100000 + Math.random() * 900000);
 			const { email } = request.body;
 			const result = await checkByEmail(email);
 			if (result.length > 0) {
