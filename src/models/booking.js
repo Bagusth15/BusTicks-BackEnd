@@ -122,5 +122,20 @@ module.exports = {
 				}
 			);
 		});
+	},
+	getBookingUser: id => {
+		return new Promise((resolve, reject) => {
+			connection.query(
+				`SELECT booking.id, user.email, booking.invoice, booking.id_schedule, booking.total_price, booking.payment_link, booking.payment_status, booking.create_at, booking.update_at FROM booking JOIN user ON booking.id_user = user.id WHERE booking.id_user=?`,
+				id,
+				(error, result) => {
+					if (!error) {
+						resolve(result);
+					} else {
+						reject(new Error(error));
+					}
+				}
+			);
+		});
 	}
 };

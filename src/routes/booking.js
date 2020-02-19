@@ -5,11 +5,13 @@ const validator = require('../validator');
 const {
 	getBooking,
 	getBookingById,
-	postBooking
+	postBooking,
+	getBookingUser
 } = require('../controller/booking');
 
 Route.get('/', getBooking);
 Route.get('/:id', getBookingById);
+Route.get('/user/:id', getBookingUser);
 Route.post('/', postBooking);
 
 module.exports = Route;

@@ -6,7 +6,8 @@ const {
 	checkingPrice,
 	postBookingDetail,
 	getTotal,
-	updateBooking
+	updateBooking,
+	getBookingUser
 } = require('../models/booking');
 const { createPayment } = require('../models/payment');
 const { validationResult } = require('express-validator');
@@ -30,6 +31,27 @@ module.exports = {
 		try {
 			const { id } = request.params;
 			const result = await getBookingById(id);
+			for (let i = 0; i < result.length; i++) {
+				result[i].booking = await getBookingDetails(result[i].id);
+			}
+			if (result.length > 0) {
+				return helper.response(response, 200, result);
+			} else {
+				return helper.response(
+					response,
+					200,
+					[],
+					[{ error: 'Data not found' }]
+				);
+			}
+		} catch (error) {
+			return helper.response(response, 400, error);
+		}
+	},
+	getBookingUser: async (request, response) => {
+		try {
+			const { id } = request.params;
+			const result = await getBookingUser(id);
 			for (let i = 0; i < result.length; i++) {
 				result[i].booking = await getBookingDetails(result[i].id);
 			}
