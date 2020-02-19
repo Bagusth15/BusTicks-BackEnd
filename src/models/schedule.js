@@ -104,7 +104,7 @@ module.exports = {
 	putBooking: id => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`UPDATE booking SET payment_status='expired', payment_link='' WHERE id=${id}`,
+				`UPDATE booking SET payment_status='expire', payment_link='' WHERE id=${id}`,
 				(error, result) => {
 					if (!error) {
 						resolve(result);

@@ -12,9 +12,9 @@ const {
 const { validationResult } = require('express-validator');
 const moment = require('moment');
 const helper = require('../helper');
+const sendMail = require('../helper/sendEmail');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
 
 module.exports = {
 	registerUser: async (request, response) => {
@@ -194,22 +194,7 @@ module.exports = {
 			const result = await checkByEmail(email);
 			if (result.length > 0) {
 				const { id, email } = result[0];
-				let transporter = nodemailer.createTransport({
-					host: 'smtp.gmail.com',
-					port: 465,
-					secure: true, // true for 465, false for other ports
-					auth: {
-						user: 'memo.in.aja@gmail.com', // generated ethereal user
-						pass: 'Memo050798' // generated ethereal password
-					}
-				});
-				// send mail with defined transport object
-				let info = await transporter.sendMail({
-					from: '"BusTicks"', // sender address
-					to: email, // list of receivers
-					subject: 'BusTicks - Forgot Password', // Subject line
-					html: `<b>Please input the code for reset password : </b> ${userKeys}` // html body
-				});
+				await sendMail.forgot(email, userKeys);
 				const dataReset = {
 					id: id,
 					userKeys: userKeys,
