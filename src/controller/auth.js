@@ -15,10 +15,6 @@ const helper = require('../helper');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-const userKey = 4;
-const userKeys = Math.floor(
-	Math.pow(10, userKey - 1) + Math.random() * 9 * Math.pow(10, userKey - 1)
-);
 
 module.exports = {
 	registerUser: async (request, response) => {
@@ -183,6 +179,10 @@ module.exports = {
 		}
 	},
 	forgotPasswordUser: async (request, response) => {
+		const userKey = 4;
+		const userKeys = Math.floor(
+			Math.pow(10, userKey - 1) + Math.random() * 9 * Math.pow(10, userKey - 1)
+		);
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			const extractedErrors = [];
