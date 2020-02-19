@@ -136,43 +136,43 @@ module.exports = {
 				searchTimeArrival +
 				sort;
 			const splitId = createId.replace(/\s/g, '');
-			// client.get(splitId, async (err, data) => {
-			// 	if (err) throw err;
-			// 	if (data !== null) {
-			// 		const result = JSON.parse(data);
-			// 		return helper.response(response, 200, {
-			// 			result,
-			// 			limit,
-			// 			currentPage,
-			// 			totalPage,
-			// 			totalItems
-			// 		});
-			// 	} else {
-			const result = await getSchedule(
-				limit,
-				skip,
-				searcNameBus,
-				searchDate,
-				searchCityDeparture,
-				searchCityArrival,
-				searchTerminalDeparture,
-				searchTerminalArrival,
-				searchTimeDeparture,
-				searchTimeArrival,
-				sort
-			);
-			// const results = JSON.stringify(result);
-			// client.setex(splitId, 3600, results);
+			client.get(splitId, async (err, data) => {
+				if (err) throw err;
+				if (data !== null) {
+					const result = JSON.parse(data);
+					return helper.response(response, 200, {
+						result,
+						limit,
+						currentPage,
+						totalPage,
+						totalItems
+					});
+				} else {
+					const result = await getSchedule(
+						limit,
+						skip,
+						searcNameBus,
+						searchDate,
+						searchCityDeparture,
+						searchCityArrival,
+						searchTerminalDeparture,
+						searchTerminalArrival,
+						searchTimeDeparture,
+						searchTimeArrival,
+						sort
+					);
+					const results = JSON.stringify(result);
+					client.setex(splitId, 3600, results);
 
-			return helper.response(response, 200, {
-				result,
-				limit,
-				currentPage,
-				totalPage,
-				totalItems
+					return helper.response(response, 200, {
+						result,
+						limit,
+						currentPage,
+						totalPage,
+						totalItems
+					});
+				}
 			});
-			// 	}
-			// });
 		} catch (error) {
 			return helper.response(response, 400, error);
 		}
@@ -180,33 +180,32 @@ module.exports = {
 	getScheduleById: async (request, response) => {
 		try {
 			const { id } = request.params;
-			// client.get(`schedule${id}`, async (err, data) => {
-			// 	if (err) throw err;
-			// 	if (data !== null) {
-			// 		const result = JSON.parse(data);
-			// 		return helper.response(response, 200, result);
-			// 	} else {
+			client.get(`schedule${id}`, async (err, data) => {
+				if (err) throw err;
+				if (data !== null) {
+					const result = JSON.parse(data);
+					return helper.response(response, 200, result);
+				} else {
+					const result = await getScheduleById(id);
+					if (result.length > 0) {
+						const results = JSON.stringify(result);
+						client.setex(`schedule${id}`, 3600, results);
 
-			const result = await getScheduleById(id);
-			if (result.length > 0) {
-				// const results = JSON.stringify(result);
-				// client.setex(`schedule${id}`, 3600, results);
-
-				return helper.response(response, 200, result);
-			} else {
-				return helper.response(
-					response,
-					200,
-					[],
-					[
-						{
-							error: 'Data not found'
-						}
-					]
-				);
-			}
-			// 	}
-			// });
+						return helper.response(response, 200, result);
+					} else {
+						return helper.response(
+							response,
+							200,
+							[],
+							[
+								{
+									error: 'Data not found'
+								}
+							]
+						);
+					}
+				}
+			});
 		} catch (error) {
 			return helper.response(response, 400, error);
 		}
