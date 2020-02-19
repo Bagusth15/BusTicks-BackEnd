@@ -48,7 +48,7 @@ module.exports = {
 	) => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`SELECT bus.name, bus.total_seat, bus.format_seat, schedule.departure_location, schedule.departure_time, schedule.arrival_location, schedule.arrival_time, schedule.price FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE bus.name LIKE '%${searcNameBus}%' ${searchDate} ${searchCityDeparture} ${searchCityArrival} ${searchTerminalDeparture} ${searchTerminalArrival} ${searchTimeDeparture} ${searchTimeArrival} ORDER BY ${sort} ASC LIMIT ${limit} OFFSET ${skip}`,
+				`SELECT schedule.id, bus.name, bus.total_seat, bus.format_seat, schedule.departure_location, schedule.departure_time, schedule.arrival_location, schedule.arrival_time, schedule.price FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE bus.name LIKE '%${searcNameBus}%' ${searchDate} ${searchCityDeparture} ${searchCityArrival} ${searchTerminalDeparture} ${searchTerminalArrival} ${searchTimeDeparture} ${searchTimeArrival} ORDER BY ${sort} ASC LIMIT ${limit} OFFSET ${skip}`,
 				(error, result) => {
 					if (!error) {
 						resolve(result);
@@ -62,7 +62,7 @@ module.exports = {
 	getScheduleById: id => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`SELECT * FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE schedule.id=${id}`,
+				`SELECT schedule.id, bus.name, bus.total_seat, bus.format_seat, schedule.departure_location, schedule.departure_time, schedule.arrival_location, schedule.arrival_time, schedule.price, schedule.create_at, schedule.update_at  FROM schedule JOIN bus ON schedule.id_bus = bus.id WHERE schedule.id=${id}`,
 				(error, result) => {
 					if (!error) {
 						resolve(result);
