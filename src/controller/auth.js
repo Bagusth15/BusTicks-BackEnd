@@ -179,10 +179,6 @@ module.exports = {
 		}
 	},
 	forgotPasswordUser: async (request, response) => {
-		const userKey = 4;
-		const userKeys = Math.floor(
-			Math.pow(10, userKey - 1) + Math.random() * 9 * Math.pow(10, userKey - 1)
-		);
 		const errors = validationResult(request);
 		if (!errors.isEmpty()) {
 			const extractedErrors = [];
@@ -193,6 +189,11 @@ module.exports = {
 		}
 
 		try {
+			const userKey = 4;
+			const userKeys = Math.floor(
+				Math.pow(10, userKey - 1) +
+					Math.random() * 9 * Math.pow(10, userKey - 1)
+			);
 			const { email } = request.body;
 			const result = await checkByEmail(email);
 			if (result.length > 0) {

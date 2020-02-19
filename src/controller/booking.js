@@ -48,12 +48,12 @@ module.exports = {
 		}
 	},
 	postBooking: async (request, response) => {
-		const lengthInvoice = 9;
-		const invoicegenerate = Math.floor(
-			Math.pow(10, lengthInvoice - 1) +
-				Math.random() * 9 * Math.pow(10, lengthInvoice - 1)
-		);
 		try {
+			const lengthInvoice = 9;
+			const invoicegenerate = Math.floor(
+				Math.pow(10, lengthInvoice - 1) +
+					Math.random() * 9 * Math.pow(10, lengthInvoice - 1)
+			);
 			setData = {
 				id_user: request.body.id_user,
 				invoice: invoicegenerate,
