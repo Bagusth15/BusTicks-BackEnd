@@ -16,10 +16,6 @@ module.exports = {
 				let transactionStatus = statusResponse.transaction_status;
 				let fraudStatus = statusResponse.fraud_status;
 
-				console.log(
-					`Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`
-				);
-
 				if (transactionStatus == 'capture') {
 					if (fraudStatus == 'challenge') {
 						return putBooking(orderId, fraudStatus);

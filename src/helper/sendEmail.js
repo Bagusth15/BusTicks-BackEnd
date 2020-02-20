@@ -3,12 +3,12 @@ const nodemailer = require('nodemailer');
 module.exports = {
 	forgot: async (email, userKeys) => {
 		let transporter = nodemailer.createTransport({
-			host: 'smtp.gmail.com',
-			port: 465,
+			host: process.env.HOST_EMAIL,
+			port: process.env.PORT_EMAIL,
 			secure: true, // true for 465, false for other ports
 			auth: {
-				user: 'memo.in.aja@gmail.com', // generated ethereal user
-				pass: 'Memo050798' // generated ethereal password
+				user: process.env.USER_EMAIL, // generated ethereal user
+				pass: process.env.USER_PASSWORD // generated ethereal password
 			}
 		});
 		// send mail with defined transport object

@@ -4,7 +4,6 @@ const {
 	checkEmail,
 	postUser,
 	checkByEmail,
-	checkById,
 	updatePassword,
 	updateKeys,
 	checkTimeKey

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 18, 2020 at 04:09 PM
+-- Generation Time: Feb 20, 2020 at 01:39 AM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.1.28
 
@@ -203,7 +203,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `name`, `email`, `username`, `password`, `image`, `key_user`, `status`, `create_at`, `update_at`) VALUES
-(2, 'Bagus Tri Harjanto', 'bagustri15@gmail.com', 'bagusth15', '$2b$10$32SFkZ.VC2cfw3A2xXUwyevboxAndFuXG9RIjhdLHXse8isKAVJ8G', '369284bear.png', '2779', 1, '2020-02-17 00:05:37', '2020-02-17 10:50:09');
+(2, 'Bagus Tri Harjanto', 'bagustri15@gmail.com', 'bagustri15', '$2b$10$32SFkZ.VC2cfw3A2xXUwyevboxAndFuXG9RIjhdLHXse8isKAVJ8G', '557271blackforest.png', '8529', 1, '2020-02-17 00:05:37', '2020-02-19 12:21:04');
 
 --
 -- Indexes for dumped tables
@@ -221,7 +221,8 @@ ALTER TABLE `booking`
 -- Indexes for table `bookingdetail`
 --
 ALTER TABLE `bookingdetail`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_booking` (`id_booking`);
 
 --
 -- Indexes for table `bus`
@@ -265,13 +266,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bookingdetail`
 --
 ALTER TABLE `bookingdetail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `bus`
@@ -313,6 +314,12 @@ ALTER TABLE `user`
 ALTER TABLE `booking`
   ADD CONSTRAINT `booking_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`),
   ADD CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`id_schedule`) REFERENCES `schedule` (`id`);
+
+--
+-- Constraints for table `bookingdetail`
+--
+ALTER TABLE `bookingdetail`
+  ADD CONSTRAINT `bookingdetail_ibfk_1` FOREIGN KEY (`id_booking`) REFERENCES `booking` (`id`);
 
 --
 -- Constraints for table `schedule`

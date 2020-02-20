@@ -7,8 +7,6 @@ const {
 	deleteSeat,
 	putBooking
 } = require('../models/schedule');
-const { validationResult } = require('express-validator');
-const moment = require('moment');
 const helper = require('../helper');
 const redis = require('redis');
 const client = redis.createClient();
@@ -103,8 +101,6 @@ module.exports = {
 				if (item.minute_diff < -30) {
 					await putBooking(item.id);
 					await deleteSeat(item.id);
-				} else {
-					console.log(`${item.minute_diff} < -30`);
 				}
 			});
 			const skip = (page - 1) * limit;

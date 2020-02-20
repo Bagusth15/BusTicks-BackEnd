@@ -10,10 +10,7 @@ const {
 	getBookingUser
 } = require('../models/booking');
 const { createPayment } = require('../models/payment');
-const { validationResult } = require('express-validator');
-const moment = require('moment');
 const helper = require('../helper');
-const nodemailer = require('nodemailer');
 
 module.exports = {
 	getBooking: async (request, response) => {
