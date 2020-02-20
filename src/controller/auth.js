@@ -265,7 +265,6 @@ module.exports = {
 					} else {
 						const data = {
 							password: bcrypt.hashSync(password, 10),
-							key_user: '',
 							update_at: moment().format()
 						};
 						const result = await updatePassword(id, data);
