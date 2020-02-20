@@ -95,8 +95,8 @@ module.exports = {
 	updatePassword: (id, data) => {
 		return new Promise((resolve, reject) => {
 			connection.query(
-				`UPDATE user SET password=?, update_at=? WHERE id=?`,
-				[data.password, data.update_at, id],
+				`UPDATE user SET password=?, key_user=?, update_at=? WHERE id=?`,
+				[data.password, data.key_user, data.update_at, id],
 				(error, result) => {
 					if (!error) {
 						const newResult = {
